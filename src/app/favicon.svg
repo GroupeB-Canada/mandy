@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hg" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#CC1418"/>
+      <stop offset="60%" stop-color="#A80F12"/>
+      <stop offset="100%" stop-color="#6E0608"/>
+    </linearGradient>
+  </defs>
+  <!-- Heart -->
+  <path fill="url(#hg)" d="M256,420 C205,375 40,300 40,195 C40,128 88,88 144,88 C190,88 226,114 256,148 C286,114 322,88 368,88 C424,88 472,128 472,195 C472,300 307,375 256,420 Z"/>
+  <!-- M shadow -->
+  <polygon fill="#7A4A08" points="138,158 182,158 256,278 330,158 374,158 374,360 330,360 330,240 256,348 182,240 182,360 138,360" transform="translate(8,8)"/>
+  <!-- M bevel -->
+  <polygon fill="#C8860A" points="138,158 182,158 256,278 330,158 374,158 374,360 330,360 330,240 256,348 182,240 182,360 138,360" transform="translate(4,4)"/>
+  <!-- M white face -->
+  <polygon fill="white" points="138,158 182,158 256,278 330,158 374,158 374,360 330,360 330,240 256,348 182,240 182,360 138,360"/>
+  <!-- M inner stroke -->
+  <polygon fill="none" stroke="#1A0000" stroke-width="6" stroke-linejoin="miter" points="138,158 182,158 256,278 330,158 374,158 374,360 330,360 330,240 256,348 182,240 182,360 138,360"/>
+</svg>
