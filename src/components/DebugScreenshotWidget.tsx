@@ -26,23 +26,15 @@ interface Props {
   position?: 'bottom-left' | 'bottom-right';
 }
 
-// ─── Charger html2canvas depuis CDN (lazy, une seule fois) ────────────────────
-declare global {
-  interface Window {
-    html2canvas?: (el: HTMLElement, opts?: Record<string, unknown>) => Promise<HTMLCanvasElement>;
-  }
-}
+// ─── Import dynamique html2canvas (bundlé npm, passe le CSP) ────────────────
+type H2CFunc = (el: HTMLElement, opts?: Record<string, unknown>) => Promise<HTMLCanvasElement>;
+let h2cCache: H2CFunc | null = null;
 
-function loadHtml2Canvas(): Promise<typeof window.html2canvas> {
-  return new Promise((resolve, reject) => {
-    if (window.html2canvas) { resolve(window.html2canvas); return; }
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-    s.crossOrigin = 'anonymous';
-    s.onload = () => resolve(window.html2canvas);
-    s.onerror = () => reject(new Error('html2canvas CDN failed'));
-    document.head.appendChild(s);
-  });
+async function loadHtml2Canvas(): Promise<H2CFunc> {
+  if (h2cCache) return h2cCache;
+  const mod = await import('html2canvas');
+  h2cCache = mod.default as H2CFunc;
+  return h2cCache;
 }
 
 // ─── Composant principal ──────────────────────────────────────────────────────
@@ -89,7 +81,6 @@ export default function DebugScreenshotWidget({
     try {
       // 1. Charger html2canvas + capturer le document entier
       const h2c = await loadHtml2Canvas();
-      if (!h2c) throw new Error('html2canvas non disponible');
 
       const canvas = await h2c(document.documentElement, {
         useCORS: true,
