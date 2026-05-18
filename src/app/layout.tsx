@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import DebugScreenshotWidget from '@/components/DebugScreenshotWidget';
 
 export const metadata: Metadata = {
   title: { default: 'Mandy — Financez ce qui compte', template: '%s | Mandy' },
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header/>
         <main>{children}</main>
         <Footer/>
+              <DebugScreenshotWidget siteId="mandy.groupeb.ca" />
       </body>
     </html>
   )
