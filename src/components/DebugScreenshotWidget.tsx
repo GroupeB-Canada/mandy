@@ -82,6 +82,30 @@ export default function DebugScreenshotWidget({
       // 1. Charger html2canvas + capturer le document entier
       const h2c = await loadHtml2Canvas();
 
+      // html2canvas ne supporte pas lab()/lch()/oklab()/oklch() — on les retire du clone
+      const fixUnsupportedColors = (cloneDoc: Document) => {
+        const LAB_RE = /\b(ok)?l(a|c)b\s*\([^)]*\)/gi;
+        try {
+          Array.from(cloneDoc.styleSheets).forEach((sheet) => {
+            try {
+              Array.from(sheet.cssRules || []).forEach((rule) => {
+                if (LAB_RE.test(rule.cssText)) {
+                  (rule as CSSStyleRule).style?.setProperty('color', '#000', 'important');
+                  (rule as CSSStyleRule).style?.setProperty('background-color', 'transparent', 'important');
+                }
+              });
+            } catch { /* cross-origin sheet — skip */ }
+          });
+        } catch { /* ignore */ }
+        // Also patch inline styles
+        cloneDoc.querySelectorAll<HTMLElement>('[style]').forEach((el) => {
+          const st = el.getAttribute('style') || '';
+          if (LAB_RE.test(st)) {
+            el.setAttribute('style', st.replace(LAB_RE, '#6366f1'));
+          }
+        });
+      };
+
       const canvas = await h2c(document.documentElement, {
         useCORS: true,
         scale: 1.5,
@@ -89,12 +113,17 @@ export default function DebugScreenshotWidget({
         backgroundColor: '#ffffff',
         windowWidth: document.documentElement.scrollWidth,
         windowHeight: document.documentElement.scrollHeight,
+        onclone: (_doc: Document, el: HTMLElement) => fixUnsupportedColors(el.ownerDocument ?? _doc),
       });
 
       const screenshotBase64 = canvas.toDataURL('image/png');
 
       // 2. Envoyer vers l'API route Next.js locale (pas besoin d'API Gateway)
-      const res = await fetch('/api/debug/screenshot', {
+      // Inclure ?debug=1 si activé via query param (pas d'env var côté serveur)
+      const apiUrl = process.env.NEXT_PUBLIC_DEBUG_ENABLED === 'true'
+        ? '/api/debug/screenshot'
+        : '/api/debug/screenshot?debug=1';
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
