@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         Key: s3Key,
         Body: imageBuffer,
         ContentType: 'image/png',
-        Metadata: { siteId, debugId, capturedAt: timestamp, pageTitle },
+        Metadata: { siteId, debugId, capturedAt: timestamp, pageTitle: encodeURIComponent(pageTitle).slice(0, 900) },
       })
     );
 
