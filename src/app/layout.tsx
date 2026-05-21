@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -29,7 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header/>
         <main>{children}</main>
         <Footer/>
-              <DebugScreenshotWidget siteId="mandy.groupeb.ca" />
+              {/* GroupeB Chatbot — Léa */}
+      <Script src="https://groupeb-chatbot-widget-prod.s3.ca-central-1.amazonaws.com/chatbot.js" data-site="mandy" data-api="https://chatbot.groupeb.ca/api" data-lang="fr" strategy="afterInteractive" />
+
+      <DebugScreenshotWidget siteId="mandy.groupeb.ca" />
       </body>
     </html>
   )
